@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"1.0"
+#define PLUGIN_VERSION 		"1.1"
 
 /*=======================================================================================
 	Plugin Info:
@@ -31,6 +31,9 @@
 
 ========================================================================================
 	Change Log:
+
+1.1 (10-Feb-2023)
+	- Updated plugin and config to support Mounted Machine Guns and Mini Guns. Thanks to "Iizuka07" for reporting.
 
 1.0 (10-Feb-2023)
 	- Initial release.
@@ -309,6 +312,8 @@ bool IsValidCommon(int entity)
 // Called 1st
 Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3])
 {
+	// PrintToChatAll("A %d %d %d %f %d %d", victim, attacker, inflictor, damage, damagetype, weapon);
+
 	g_fDamage[victim] = damage;
 	return Plugin_Continue;
 }
@@ -316,6 +321,8 @@ Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, in
 // Called 2nd, if damage is applied, otherwise it's skipped and they are invulnerable to damage
 Action OnTakeAlive(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
+	// PrintToChatAll("B %d %d %d %f %d", victim, attacker, inflictor, damage, damagetype);
+
 	g_fDamage[victim] = 0.0;
 	return Plugin_Continue;
 }
@@ -323,9 +330,14 @@ Action OnTakeAlive(int victim, int &attacker, int &inflictor, float &damage, int
 // Called 3rd
 void OnTakeDamagePost(int victim, int attacker, int inflictor, float damage, int damagetype, int weapon, const float damageForce[3], const float damagePosition[3])
 {
+	// PrintToChatAll("C %d %d %d %f %d %d", victim, attacker, inflictor, damage, damagetype, weapon);
+
 	if( g_fDamage[victim] )
 	{
 		damage = g_fDamage[victim];
+
+		if( weapon == -1 && inflictor > MaxClients )
+			weapon = inflictor;
 
 		// Get weapon
 		if( weapon > 0 )
