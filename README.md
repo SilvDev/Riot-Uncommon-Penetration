@@ -1,2 +1,1 @@
-# Riot-Uncommon-Penetration
-Allows bullets to penetrate Riot uncommon infected.
+Details: https://forums.alliedmods.net/showthread.php?t=341750
