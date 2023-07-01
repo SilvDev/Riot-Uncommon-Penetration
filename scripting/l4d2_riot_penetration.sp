@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION 		"1.1"
+#define PLUGIN_VERSION 		"1.2"
 
 /*=======================================================================================
 	Plugin Info:
@@ -31,6 +31,9 @@
 
 ========================================================================================
 	Change Log:
+
+1.2 (01-Jul-2023)
+	- Fixed random rare invalid edict error. Thanks to "Sev" for reporting.
 
 1.1 (10-Feb-2023)
 	- Updated plugin and config to support Mounted Machine Guns and Mini Guns. Thanks to "Iizuka07" for reporting.
@@ -288,6 +291,8 @@ public void OnEntityCreated(int entity, const char[] classname)
 
 void OnSpawn(int entity)
 {
+	SDKUnhook(entity, SDKHook_SpawnPost, OnSpawn);
+
 	if( IsValidCommon(entity) )
 	{
 		SDKHook(entity, SDKHook_OnTakeDamage, OnTakeDamage);
@@ -340,7 +345,7 @@ void OnTakeDamagePost(int victim, int attacker, int inflictor, float damage, int
 			weapon = inflictor;
 
 		// Get weapon
-		if( weapon > 0 )
+		if( weapon > 0 && IsValidEdict(weapon) )
 		{
 			static char sTemp[64];
 			GetEdictClassname(weapon, sTemp, sizeof(sTemp));
